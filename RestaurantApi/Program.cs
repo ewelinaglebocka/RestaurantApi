@@ -3,6 +3,7 @@ using RestaurantApi;
 using RestaurantApi.Entities;
 using RestaurantApi.Middleware;
 using RestaurantApi.Services;
+using static RestaurantApi.Services.AccountService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +18,7 @@ builder.Services.AddDbContext<RestaurantDbContext>();
 builder.Services.AddScoped<RestaurantSeeder>();
 builder.Services.AddAutoMapper(this.GetType().Assembly);
 builder.Services.AddScoped<IRestaurantService, RestaurantService>();
+builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<ErrorHandingMiddleware>();
 builder.Services.AddScoped<RequestTimeMidleware>();
 builder.Services.AddSwaggerGen();
