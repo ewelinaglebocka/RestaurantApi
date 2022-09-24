@@ -3,6 +3,7 @@ using RestaurantApi;
 using RestaurantApi.Entities;
 using RestaurantApi.Middleware;
 using RestaurantApi.Services;
+using RestaurantAPI;
 using static RestaurantApi.Services.AccountService;
 
 var builder = WebApplication.CreateBuilder(args);

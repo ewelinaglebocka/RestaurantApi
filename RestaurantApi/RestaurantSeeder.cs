@@ -1,10 +1,16 @@
-﻿using RestaurantApi.Entities;
-
-namespace RestaurantApi
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using RestaurantApi.Entities;
+namespace RestaurantAPI
 {
     public class RestaurantSeeder
     {
         private readonly RestaurantDbContext _dbContext;
+
         public RestaurantSeeder(RestaurantDbContext dbContext)
         {
             _dbContext = dbContext;
@@ -13,7 +19,13 @@ namespace RestaurantApi
         {
             if (_dbContext.Database.CanConnect())
             {
-                if (!_dbContext.Restaurants.Any())
+                var pendingMigrations = _dbContext.Database.GetPendingMigrations();
+                if (pendingMigrations != null && pendingMigrations.Any())
+                {
+                    _dbContext.Database.Migrate();
+                }
+
+                if (!_dbContext.Roles.Any())
                 {
                     var roles = GetRoles();
                     _dbContext.Roles.AddRange(roles);
@@ -28,6 +40,7 @@ namespace RestaurantApi
                 }
             }
         }
+
         private IEnumerable<Role> GetRoles()
         {
             var roles = new List<Role>()
@@ -38,76 +51,71 @@ namespace RestaurantApi
                 },
                 new Role()
                 {
-                    Name="Manager"
-                },
+                Name = "Manager"
+            },
                 new Role()
                 {
-                    Name = "Admn"
-                }
+                    Name = "Admin"
+                },
             };
+
             return roles;
         }
+
         private IEnumerable<Restaurant> GetRestaurants()
         {
-            var restaurants = new List<Restaurant>();
-            new Restaurant()
+            var restaurants = new List<Restaurant>()
             {
-                Name = "KFC",
-                Category = "Fast Food",
-                Description = "KFC (short fot Kentucky Fried Chicken) is an American fast foof restaurant chain headquartered in..",
-                ContactEmail = "contact@kfc.com",
-                HasDelivery = true,
-                Dishes = new List<Dish>()
+                new Restaurant()
                 {
-                    new Dish()
+                    Name = "KFC",
+                    Category = "Fast Food",
+                    Description =
+                        "KFC (short for Kentucky Fried Chicken) is an American fast food restaurant chain headquartered in Louisville, Kentucky, that specializes in fried chicken.",
+                    ContactEmail = "contact@kfc.com",
+                    ContactNumber = "1235123313",
+                    HasDelivery = true,
+                    Dishes = new List<Dish>()
                     {
-                        Name = "Nashville Hot Chicken",
-                        Price = 10.30M,
-                    },
+                        new Dish()
+                        {
+                            Name = "Nashville Hot Chicken",
+                            Price = 10.30M,
+                            Description = "ło matko dlaczego"
+                        },
 
-                     new Dish()
-                    {
-                        Name = "Chicken Nuggets",
-                        Price = 4.30M,
+                        new Dish()
+                        {
+                            Name = "Chicken Nuggets",
+                            Price = 5.30M,
+                            Description = "trytytyty"
+                        },
                     },
+                    Address = new Address()
+                    {
+                        City = "Kraków",
+                        Street = "Długa 5",
+                        PostalCode = "30-001"
+                    }
                 },
-                Address = new Address()
+                new Restaurant()
                 {
-                    City = "Kraków",
-                    Street = "Długa 5",
-                    PostalCode = "30-001"
+                    Name = "McDonald Szewska",
+                    Category = "Fast Food",
+                    Description =
+                        "McDonald's Corporation (McDonald's), incorporated on December 21, 1964, operates and franchises McDonald's restaurants.",
+                    ContactEmail = "contact@mcdonald.com",
+                    ContactNumber = "16465",
+                    HasDelivery = true,
+                    Address = new Address()
+                    {
+                        City = "Kraków",
+                        Street = "Szewska 2",
+                        PostalCode = "30-001"
+                    }
                 }
-
             };
-             new Restaurant()
-             {
-                 Name = "KFC 2.0",
-                 Category = "Fast Food",
-                 Description = "KFC 2.0 (short fot Kentucky Fried Chicken) is an American fast foof restaurant chain headquartered in..",
-                 ContactEmail = "contact2-0@kfc.com",
-                 HasDelivery = true,
-                 Dishes = new List<Dish>()
-                {
-                    new Dish()
-                    {
-                        Name = "Nashville Hot Chicken 2.0",
-                        Price = 10.30M,
-                    },
 
-                     new Dish()
-                    {
-                        Name = "Chicken Nuggets 2.0",
-                        Price = 4.30M,
-                    },
-                },
-                 Address = new Address()
-                 {
-                     City = "Warszawa",
-                     Street = "Krótka 5",
-                     PostalCode = "50-401"
-                 }
-
-             };
             return restaurants;
         }
     }
