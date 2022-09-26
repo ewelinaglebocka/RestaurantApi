@@ -1,3 +1,5 @@
+using FluentAssertions.Common;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Writers;
 using NLog.Web;
@@ -24,9 +26,9 @@ builder.Services.AddSingleton(authenticationSettings);
 
 builder.Services.AddAuthentication(option =>
 {
-    option.DefaultAuthenticateScheme = "Barer";
-    option.DefaultScheme = "Barer";
-    option.DefaultChallengeScheme = "Barer";
+    option.DefaultAuthenticateScheme = "Bearer";
+    option.DefaultScheme = "Bearer";
+    option.DefaultChallengeScheme = "Bearer";
 }).AddJwtBearer(cfg =>
 {
     cfg.RequireHttpsMetadata = false;
@@ -44,6 +46,7 @@ builder.Services.AddDbContext<RestaurantDbContext>();
 builder.Services.AddScoped<RestaurantSeeder>();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddScoped<IRestaurantService, RestaurantService>();
+builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<ErrorHandingMiddleware>();
 builder.Services.AddScoped<RequestTimeMidleware>();
