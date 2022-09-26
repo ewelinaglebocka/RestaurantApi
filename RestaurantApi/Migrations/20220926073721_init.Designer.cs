@@ -12,7 +12,7 @@ using RestaurantApi.Entities;
 namespace RestaurantApi.Migrations
 {
     [DbContext(typeof(RestaurantDbContext))]
-    [Migration("20220924165110_init")]
+    [Migration("20220926073721_init")]
     partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

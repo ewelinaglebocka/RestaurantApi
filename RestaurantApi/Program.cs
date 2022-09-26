@@ -1,9 +1,13 @@
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Writers;
 using NLog.Web;
 using RestaurantApi;
 using RestaurantApi.Entities;
 using RestaurantApi.Middleware;
 using RestaurantApi.Services;
 using RestaurantAPI;
+using System.Configuration;
+using System.Text;
 using static RestaurantApi.Services.AccountService;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +17,27 @@ builder.Logging.ClearProviders();
 builder.Host.UseNLog();
 
 // Add services to the container.
+var authenticationSettings = new AuthenticationSettings();
+
+builder.Configuration.GetSection("Authentication").Bind(authenticationSettings);
+builder.Services.AddSingleton(authenticationSettings);
+
+builder.Services.AddAuthentication(option =>
+{
+    option.DefaultAuthenticateScheme = "Barer";
+    option.DefaultScheme = "Barer";
+    option.DefaultChallengeScheme = "Barer";
+}).AddJwtBearer(cfg =>
+{
+    cfg.RequireHttpsMetadata = false;
+    cfg.SaveToken = true;
+    cfg.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidIssuer = authenticationSettings.JwtIssuer,
+        ValidAudience = authenticationSettings.JwtIssuer,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authenticationSettings.JwtKey)),
+    };
+});
 
 builder.Services.AddControllers();
 builder.Services.AddDbContext<RestaurantDbContext>();
@@ -35,6 +60,7 @@ seeder.Seed();
 
 app.UseMiddleware<ErrorHandingMiddleware>();
 app.UseMiddleware<RequestTimeMidleware>();
+app.UseAuthentication();
 
 app.UseHttpsRedirection();
 
